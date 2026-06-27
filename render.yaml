@@ -13,6 +13,7 @@ services:
       - key: DB_TYPE
         value: postgresdb
 
+      # Credenciales seguras (se mantienen en el panel de Render)
       - key: DB_POSTGRESDB_DATABASE
         sync: false
       - key: DB_POSTGRESDB_HOST
@@ -24,7 +25,18 @@ services:
       - key: DB_POSTGRESDB_PASSWORD
         sync: false
         
+      # Configuración SSL para Aiven
       - key: DB_POSTGRESDB_SSL_ENABLED
         value: "true"
       - key: DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED
         value: "false"
+
+      # --- AJUSTES DE ESTABILIDAD PARA CAPA GRATUITA ---
+      
+      # Limita el consumo de RAM de Node.js antes del límite de 512MB de Render
+      - key: NODE_OPTIONS
+        value: "--max-old-space-size=460"
+        
+      # Evita problemas de enrutamiento y caídas al usar la interfaz o webhooks
+      - key: WEBHOOK_URL
+        value: "https://n8n-service-ggkw.onrender.com"
