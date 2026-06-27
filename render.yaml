@@ -40,3 +40,13 @@ services:
       # Evita problemas de enrutamiento y caídas al usar la interfaz o webhooks
       - key: WEBHOOK_URL
         value: "https://n8n-service-ggkw.onrender.com"
+      
+      # --- AJUSTES DE TIMEOUT PARA CPU LIMITADA ---
+      
+      # Aumenta el tiempo de validez del token a 120 segundos para permitir un arranque lento
+      - key: N8N_RUNNERS_GRANT_TOKEN_TTL
+        value: "120"
+        
+      # Limita las conexiones simultáneas para no saturar el límite de 20 de Aiven
+      - key: DB_POSTGRESDB_POOL_SIZE
+        value: "5"
