@@ -10,10 +10,8 @@ services:
       - key: N8N_ENCRYPTION_KEY
         generateValue: true
 
-
       - key: DB_TYPE
         value: postgresdb
-
 
       - key: DB_POSTGRESDB_DATABASE
         sync: false
@@ -26,5 +24,7 @@ services:
       - key: DB_POSTGRESDB_PASSWORD
         sync: false
         
-      - key: PGSSLMODE
-        sync: false
+      - key: DB_POSTGRESDB_SSL_ENABLED
+        value: "true"
+      - key: DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED
+        value: "false"
