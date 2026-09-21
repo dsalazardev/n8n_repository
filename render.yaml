@@ -5,6 +5,7 @@ services:
     name: n8n-service
     image:
       url: docker.io/n8nio/n8n:latest
+    healthCheckPath: /healthz
 
     envVars:
       - key: N8N_ENCRYPTION_KEY
@@ -13,7 +14,7 @@ services:
       - key: DB_TYPE
         value: postgresdb
 
-      # Credenciales seguras (se mantienen en el panel de Render)
+      # Credenciales seguras (sincronizadas desde el panel de Render)
       - key: DB_POSTGRESDB_DATABASE
         sync: false
       - key: DB_POSTGRESDB_HOST
@@ -24,29 +25,31 @@ services:
         sync: false
       - key: DB_POSTGRESDB_PASSWORD
         sync: false
-        
-      # Configuración SSL para Aiven
-      - key: DB_POSTGRESDB_SSL_ENABLED
+
+      # Configuración SSL correcta para Aiven
+      - key: DB_POSTGRESDB_SSL
         value: "true"
       - key: DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED
         value: "false"
 
-      # --- AJUSTES DE ESTABILIDAD PARA CAPA GRATUITA ---
-      
-      # Limita el consumo de RAM de Node.js antes del límite de 512MB de Render
+      # Tolerancia de tiempo para evitar "Database connection timed out"
+      - key: DB_POSTGRESDB_CONNECTION_TIMEOUT
+        value: "30000"
+
+      # --- AJUSTES DE ESTABILIDAD PARA CAPA GRATUITA (512MB RAM) ---
+
+      # Limita el Heap a 384MB para dejar 128MB libres al sistema operativo del contenedor
       - key: NODE_OPTIONS
-        value: "--max-old-space-size=460"
-        
-      # Evita problemas de enrutamiento y caídas al usar la interfaz o webhooks
-      - key: WEBHOOK_URL
-        value: "https://n8n-service-ggkw.onrender.com"
-      
-      # --- AJUSTES DE TIMEOUT PARA CPU LIMITADA ---
-      
-      # Aumenta el tiempo de validez del token a 120 segundos para permitir un arranque lento
+        value: "--max-old-space-size=384"
+
+      # Variable oficial para URL de Webhooks en n8n
+      - key: N8N_WEBHOOK_URL
+        value: "https://n8n-service-ggkw.onrender.com/"
+
+      # Ajuste de timeout de tokens para CPU limitada
       - key: N8N_RUNNERS_GRANT_TOKEN_TTL
         value: "120"
-        
-      # Limita las conexiones simultáneas para no saturar el límite de 20 de Aiven
+
+      # Control de conexiones para no saturar Aiven
       - key: DB_POSTGRESDB_POOL_SIZE
         value: "5"
